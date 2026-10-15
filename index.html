@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spaceman AI Premium</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b18;color:#f6f4ff;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:linear-gradient(135deg,#27104e,#10152e);border-bottom:1px solid #383052}
+.logo{font-size:12px;letter-spacing:3px;color:#c4a5ff}
+h1{font-size:27px;margin:10px 0}
+p{color:#aaa8c4;line-height:1.5;font-size:14px}
+main{padding:18px;max-width:600px;margin:auto}
+.panel{background:#151426;border:1px solid #302b4c;border-radius:16px;padding:16px;margin-bottom:16px}
+.label{font-size:12px;color:#aaa8c4}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:14px 0}
+.tabs button{padding:11px 2px;background:#201d34;color:#c6bfdf;border:0;border-radius:9px;font-size:12px}
+.tabs button.active{background:#8957ed;color:white}
+.cards{display:grid;gap:12px}
+.plan{background:#151426;border:1px solid #302b4c;border-radius:16px;padding:17px}
+.plan.featured{border:1px solid #a47aff;background:linear-gradient(145deg,#211739,#151426)}
+.plan h2{font-size:18px;margin:0}
+.price{font-size:25px;font-weight:bold;margin:13px 0 4px}
+.price small{font-size:12px;color:#aaa8c4;font-weight:normal}
+ul{padding-left:19px;color:#d5d1e8;font-size:13px;line-height:1.9}
+button.cta{width:100%;border:0;border-radius:10px;background:#8755ec;color:white;padding:13px;font-size:14px;font-weight:bold}
+button.secondary{background:#29243f}
+.tag{font-size:10px;background:#49316d;color:#e5d6ff;padding:5px 8px;border-radius:20px}
+.stat{font-size:20px;font-weight:bold;margin-top:7px}
+footer{text-align:center;color:#77738f;font-size:11px;padding:20px;line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">✦ SPACEMAN AI</div>
+  <h1>Analisis dalam satu tempat 🚀</h1>
+  <p>Statistik permainan, riwayat multiplier, dan laporan sesuai paket keanggotaanmu.</p>
+  <div class="row">
+    <span class="label">MEMBER AREA</span>
+    <span class="tag">PREMIUM</span>
+  </div>
+</header>
+<main>
+  <section class="panel">
+    <div class="label">DASHBOARD</div>
+    <div class="row" style="margin-top:12px">
+      <div><div class="label">Paket kamu</div><div class="stat" id="member">FREE</div></div>
+      <div><div class="label">Status</div><div class="stat" style="font-size:15px;color:#c3a3ff">Demo</div></div>
+    </div>
+    <p>Pilih paket untuk melihat harga dan fitur yang tersedia.</p>
+  </section>
+
+  <div class="label">PILIH DURASI BERLANGGANAN</div>
+  <div class="tabs" id="tabs">
+    <button class="active" data-duration="daily">Harian</button>
+    <button data-duration="weekly">Mingguan</button>
+    <button data-duration="monthly">Bulanan</button>
+    <button data-duration="yearly">Tahunan</button>
+  </div>
+  <div class="cards" id="plans"></div>
+
+  <section class="panel" style="margin-top:16px">
+    <h3 style="margin-top:0">🔐 Pembayaran aman</h3>
+    <p>Keanggotaan berbayar hanya boleh aktif setelah pembayaran terverifikasi. Halaman ini belum terhubung ke pembayaran atau database.</p>
+  </section>
+  <footer>
+    SPACEMAN AI · Statistik bukan jaminan hasil permainan.<br>
+    Bermain secara bertanggung jawab.
+  </footer>
+</main>
+<script>
+const prices={
+ daily:{REGULAR:5000,PRO:9000,VIP:15000},
+ weekly:{REGULAR:15000,PRO:29000,VIP:49000},
+ monthly:{REGULAR:39000,PRO:79000,VIP:129000},
+ yearly:{REGULAR:299000,PRO:599000,VIP:999000}
+};
+const durations={daily:"1 hari",weekly:"7 hari",monthly:"30 hari",yearly:"365 hari"};
+const features={
+ FREE:["Dashboard dasar","Maksimal 5 catatan per hari","Statistik sederhana"],
+ REGULAR:["Fitur FREE","Riwayat hingga 7 hari","Ringkasan statistik harian","Filter dasar"],
+ PRO:["Semua fitur REGULAR","Grafik distribusi multiplier","Perbandingan periode","Laporan Telegram"],
+ VIP:["Semua fitur PRO","Analisis lanjutan","Laporan khusus","Notifikasi personal","Prioritas bantuan"]
+};
+const fmt=n=>"Rp"+n.toLocaleString("id-ID");
+let duration="daily";
+function render(){
+ const box=document.getElementById("plans");
+ box.innerHTML="";
+ const free=document.createElement("section");
+ free.className="plan";
+ free.innerHTML='<div class="row"><h2>FREE</h2><span class="tag">GRATIS</span></div><div class="price">Rp0</div><ul>'+features.FREE.map(x=>'<li>'+x+'</li>').join("")+'</ul><button class="cta secondary" onclick="chooseFree()">Gunakan gratis</button>';
+ box.appendChild(free);
+ ["REGULAR","PRO","VIP"].forEach(name=>{
+   const card=document.createElement("section");
+   card.className="plan"+(name==="PRO"?" featured":"");
+   card.innerHTML='<div class="row"><h2>'+name+'</h2>'+(name==="PRO"?'<span class="tag">POPULER</span>':name==="VIP"?'<span class="tag">PREMIUM</span>':'')+'</div><div class="price">'+fmt(prices[duration][name])+' <small>/ '+durations[duration]+'</small></div><ul>'+features[name].map(x=>'<li>'+x+'</li>').join("")+'</ul><button class="cta" data-plan="'+name+'">Pilih '+name+'</button>';
+   card.querySelector("button").addEventListener("click",()=>choosePlan(name));
+   box.appendChild(card);
+ });
+}
+document.getElementById("tabs").addEventListener("click",e=>{
+ if(e.target.tagName!=="BUTTON")return;
+ duration=e.target.dataset.duration;
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b===e.target));
+ render();
+});
+function chooseFree(){
+ alert("Paket FREE dipilih. Status demo belum tersimpan ke akun.");
+}
+function choosePlan(name){
+ alert("Pilihan: "+name+" / "+durations[duration]+" / "+fmt(prices[duration][name])+". Pembayaran belum terhubung. Jangan mengirim uang melalui halaman demo ini.");
+}
+if(window.Telegram && window.Telegram.WebApp){
+ window.Telegram.WebApp.ready();
+ window.Telegram.WebApp.expand();
+}
+render();
+</script>
+</body>
+</html>
